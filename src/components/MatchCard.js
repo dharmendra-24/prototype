@@ -76,7 +76,7 @@ const CardItems = ({ match }) => {
             title="Australia won by 5 wkts"
             className="cb-mtch-crd-state cb-ovr-flo cb-font-12 cb-text-complete"
           >
-            {matchMedia.statement}
+            {match.statement}
           </div>
         </div>
       </a>
@@ -180,7 +180,7 @@ const MatchCard = () => {
         score: 284,
         over: 49.5,
         outPlayers: null,
-        url: "./south-africa.jpg", // Replace with actual URL
+        url: "./south-africa.jpg",
       },
       team2: {
         name: "Netherlands",
@@ -276,41 +276,66 @@ const MatchCard = () => {
 
   const [team1, setTeam1] = useState(null); // Replace with actual team names
 
-  const [currentOver, setCurrentOver] = useState(0);
+  const [currentOverA, setCurrentOverA] = useState(0);
+  const [currentOverB, setCurrentOverB] = useState(0);
   const [currentBall, setCurrentBall] = useState(0);
   const [team1Score, setTeam1Score] = useState(0);
   const [team2Score, setTeam2Score] = useState(0);
-  const [isMatchOver, setIsMatchOver] = useState(false);
+  const [outPlayers1, setOutPlayers1] = useState(0);
+  const [outPlayers2, setOutPlayers2] = useState(0);
+  const [isMatchOverA, setIsMatchOverA] = useState(false);
+  const [isMatchOverB, setIsMatchOverB] = useState(false);
 
   useEffect(() => {
-    // Simulate ball update every 30 seconds
     const ballUpdateInterval = setInterval(() => {
-      if (!isMatchOver && team1 != null) {
+
+      if ((!isMatchOverB || !isMatchOverA) && team1 != null) {
         const randomScore = Math.floor(Math.random() * 7); // Random score between 0-6
 
-        if (currentOver < 20) {
+
+
+        if (!isMatchOverA) {
           setTeam1Score((prevScore) => prevScore + randomScore);
+          if (randomScore == 6) {
+            setOutPlayers1((e) => e + 1);
+            if (outPlayers1 >= 9 || currentOverA >= 20) {
+              setIsMatchOverA(true);
+            }
+          }
+          if (currentBall === 6) {
+            setCurrentOverA((prevOver) => prevOver + 1);
+            setCurrentBall(1);
+          } else {
+            setCurrentBall((prevBall) => prevBall + 1);
+          }
         } else {
           setTeam2Score((prevScore) => prevScore + randomScore);
           if (team2Score > team1Score) {
-            setIsMatchOver(true);
+            setIsMatchOverB(true);
+          }
+          if (randomScore == 0) {
+            setOutPlayers2((e) => e + 1);
+            if (outPlayers2 >= 9 || currentOverB >= 20) {
+              setIsMatchOverB(true);
+            }
+          }
+          if (currentBall === 6) {
+            setCurrentOverB((prevOver) => prevOver + 1);
+            setCurrentBall(1);
+          } else {
+            setCurrentBall((prevBall) => prevBall + 1);
           }
         }
-        if (currentBall === 6) {
-          setCurrentOver((prevOver) => prevOver + 1);
-          setCurrentBall(1);
-        } else {
-          setCurrentBall((prevBall) => prevBall + 1);
-        }
-        if (currentOver >= 40) {
-          setIsMatchOver(true);
-        }
+
+        // if (currentOver >= 40) {
+        //   setIsMatchOver(true);
+        // }
       }
-    }, 3000); // Update every 30 seconds
+    }, 30000); // Update every 30 seconds
 
     // Clear interval when the component is unmounted or match is over
     return () => clearInterval(ballUpdateInterval);
-  }, [currentOver, currentBall, isMatchOver, team1]);
+  }, [currentOverA, currentOverB, currentBall, isMatchOverA, isMatchOverB, team1]);
 
   const handleTossResult = (selectedTeam) => {
     // Handle the toss result here if needed
@@ -326,25 +351,25 @@ const MatchCard = () => {
         team1: {
           name: team1 == "SL" ? "SL" : "AUS",
           score: team1Score,
+          outPlayers: outPlayers1,
           over:
-            currentOver < 20 ? currentOver + "." + currentBall : 20 + "." + 0,
+            currentOverA + "." + (!isMatchOverA ? currentBall : 0),
           url: "./sri-lanka.jpg", // Replace with actual URL
         },
         team2: {
           name: team1 != "SL" ? "SL" : "AUS",
           score: team2Score,
+          outPlayers: outPlayers2,
           over:
-            currentOver >= 20 &&
-            ((currentOver - 1) % 20) +
-            1 +
+            currentOverB +
             "." +
-            (currentOver > 39 ? 0 : currentBall),
+            (!isMatchOverA ? 0 : currentBall),
           url: "./australia.jpg", // Replace with actual URL
         },
-        statement: isMatchOver ? "Match Over" : "In Progress",
+        statement: isMatchOverA && isMatchOverB ? team2Score < team1Score ? "Team 1 wins" : "Team 2 win's" : "In Progress",
       },
     ]);
-  }, [team1Score, team2Score, isMatchOver]);
+  }, [team1Score, team2Score, isMatchOverA, isMatchOverB]);
   return (
     <div className="home_matches" style={{ marginTop: "5px" }}>
       <div className="cb-col cb-col-100">
