@@ -3,6 +3,7 @@ import SubHeader from "../components/SubHeader";
 import MatchCard from "../components/MatchCard";
 import App from "../components/playerslist";
 import React, { useState } from "react";
+import TwoColumns from "../components/two_columns";
 import App1 from "../components/playerlist2";
 const Home = () => {
   const [selectedPlayers, setSelectedPlayers] = useState([]);
@@ -63,7 +64,10 @@ const Home = () => {
 
         <SubHeader />
 
-
+        {/* <TwoColumns
+          leftComponent={<App />}
+          rightComponent={<App1 />}
+        /> */}
         <App />
         <App1 />
         <MatchCard />
