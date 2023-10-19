@@ -1,8 +1,33 @@
-import React from "react";
+//import React from "react";
 import SubHeader from "../components/SubHeader";
 import MatchCard from "../components/MatchCard";
-
+import App from "../components/playerslist";
+import React, { useState } from "react";
+import App1 from "../components/playerlist2";
 const Home = () => {
+  const [selectedPlayers, setSelectedPlayers] = useState([]);
+
+  // Define your handlePlayerSelection function
+  const handlePlayerSelection = (playerId) => {
+    if (selectedPlayers.includes(playerId)) {
+      setSelectedPlayers(selectedPlayers.filter((id) => id !== playerId));
+    } else {
+      setSelectedPlayers([...selectedPlayers, playerId]);
+    }
+  };
+
+  // Define your extra player data
+  const extras = [
+    { id: 101, name: "Extra Player 1" },
+    { id: 102, name: "Extra Player 2" },
+    // Add your extra player data here
+  ];
+
+  const playersData = [
+    { id: 1, name: "Player 1" },
+    { id: 2, name: "Player 2" },
+    // Add your player data here
+  ];
   return (
     <div className="page">
       <div id="fb-root" />
@@ -35,8 +60,14 @@ const Home = () => {
           }}
         />
 
+
         <SubHeader />
+
+
+        <App />
+        <App1 />
         <MatchCard />
+
       </div>
     </div>
   );
